@@ -1,6 +1,5 @@
 vendor
 demo
-doc
 .idea
 composer.lock
 src/Bridge
