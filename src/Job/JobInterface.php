@@ -10,7 +10,7 @@ interface JobInterface extends MessageInterface
      * Invoke the job execution
      * JobResultInterface must acquire a status before to be returned
      *
-     * @return JobResultInterface
+     * @return JobExecutionInterface
      */
     public function execute();
 }

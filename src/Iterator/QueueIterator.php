@@ -12,34 +12,45 @@ class QueueIterator implements QueueIteratorInterface
     protected $queue;
 
     /**
-     * Represents the current message
      * @var \Qu\Message\MessageInterface
      */
     protected $current;
 
     /**
-     * @param \Qu\Queue\QueueInterface $queue
+     * {@inheritDoc}
      */
     public function __construct(QueueInterface $queue)
     {
         $this->queue = $queue;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function current()
     {
         return $this->current;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function next()
     {
         $this->current = count($this->queue) ? $this->queue->dequeue() : null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function rewind()
     {
         $this->current = count($this->queue) ? $this->queue->dequeue() : null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function key()
     {
         if (null !== $this->current) {
@@ -48,6 +59,9 @@ class QueueIterator implements QueueIteratorInterface
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function valid()
     {
         return isset($this->current);

@@ -53,7 +53,7 @@ class JsonSerializer implements SerializerInterface
     }
 
     /**
-     * @param \Qu\Message\MessageInterface $message
+     * {@inheritDoc}
      * @return string
      */
     public function serialize(MessageInterface $message)
@@ -71,9 +71,8 @@ class JsonSerializer implements SerializerInterface
     }
 
     /**
-     * @param string $data
-     * @throws \RuntimeException
-     * @return mixed
+     * {@inheritDoc}
+     * @param string
      */
     public function unserialize($data)
     {

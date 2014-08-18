@@ -32,11 +32,7 @@ class SqsQueueManager implements QueueManagerInterface
     }
 
     /**
-     * Get a queue by name
-     *
-     * @param mixed $name
-     * @throws \Qu\Exception\QueueNotFoundException
-     * @return SqsQueue
+     * {@inheritDoc}
      */
     public function get($name)
     {
@@ -75,12 +71,7 @@ class SqsQueueManager implements QueueManagerInterface
     }
 
     /**
-     * Create a new queue based on the given configuration
-     *
-     * @param array|SqsQueueConfig|string $options
-     * @throws \Qu\Exception\RuntimeException
-     * @throws \Qu\Exception\InvalidArgumentException
-     * @return SqsQueue
+     * {@inheritDoc}
      */
     public function create($options)
     {
@@ -119,10 +110,7 @@ class SqsQueueManager implements QueueManagerInterface
     }
 
     /**
-     * @param string|QueueInterface $queue
-     * @throws \Qu\Exception\RuntimeException
-     * @throws \Qu\Exception\QueueNotFoundException
-     * @return bool|void
+     * {@inheritDoc}
      */
     public function remove(QueueInterface $queue)
     {
@@ -139,11 +127,14 @@ class SqsQueueManager implements QueueManagerInterface
     }
 
     /**
-     * @param QueueInterface $queue
-     * @return void
+     * {@inheritDoc}
      */
     public function flush(QueueInterface $queue)
     {
+        if (! $queue instanceof SqsQueue) {
+            throw new InvalidArgumentException('expecting an instance of SqsQueue');
+        }
+
         // we don't invoke count on each iteration, tis can cause flushing message
         // that are enqueued by other services during this operation
         $count = count($queue);
@@ -154,14 +145,9 @@ class SqsQueueManager implements QueueManagerInterface
     }
 
     /**
-     * Update the queue, with data if needed
-     *
-     * @param QueueInterface $queue
-     * @param $data
-     * @throws \Qu\Exception\InvalidArgumentException
-     * @return mixed
+     * {@inheritDoc}
      */
-    public function update(QueueInterface $queue, $data = null)
+    public function update(QueueInterface $queue)
     {
         if (! $queue instanceof SqsQueue) {
             throw new InvalidArgumentException('expecting an instance of SqsQueue');

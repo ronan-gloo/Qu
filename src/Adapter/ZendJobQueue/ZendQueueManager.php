@@ -22,7 +22,6 @@ class ZendQueueManager implements QueueManagerInterface
 
     /**
      * @param mixed $options
-     * @return void
      * @throws \Qu\Exception\UnsupportedFeatureException
      */
     public function get($options)
@@ -32,7 +31,6 @@ class ZendQueueManager implements QueueManagerInterface
 
     /**
      * @param $options
-     * @return void
      * @throws \Qu\Exception\UnsupportedFeatureException
      */
     public function create($options)
@@ -41,10 +39,7 @@ class ZendQueueManager implements QueueManagerInterface
     }
 
     /**
-     * @param QueueInterface $queue
-     * @param $data
      * @throws \Qu\Exception\UnsupportedFeatureException
-     * @return void
      */
     public function update(QueueInterface $queue, $data = null)
     {
@@ -52,11 +47,8 @@ class ZendQueueManager implements QueueManagerInterface
     }
 
     /**
-     * Permanently delete a queue.
-     *
      * @param QueueInterface $queue
      * @throws \Qu\Exception\UnsupportedFeatureException
-     * @return void
      */
     public function remove(QueueInterface $queue)
     {
@@ -64,13 +56,7 @@ class ZendQueueManager implements QueueManagerInterface
     }
 
     /**
-     * Remove all available from the queue.
-     * implementations will assume that busy|invisible elements mst not be removed
-     *
-     * @param QueueInterface $queue
-     * @return void
-     * @throws QueueNotFoundException   If the queue cannot be found
-     * @throws RuntimeException         Otherwise
+     * {@inheritDoc}
      */
     public function flush(QueueInterface $queue)
     {

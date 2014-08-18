@@ -38,11 +38,7 @@ class BeanStalkQueue implements QueueInterface, SerializerAwareInterface
     }
 
     /**
-     * Insert a new message at the top of the queue
-     *
-     * @param MessageInterface $message
-     * @throws \Qu\Exception\Exception
-     * @return void
+     * {@inheritDoc}
      */
     public function enqueue(MessageInterface $message)
     {
@@ -77,10 +73,7 @@ class BeanStalkQueue implements QueueInterface, SerializerAwareInterface
     }
 
     /**
-     * Extract the message from the queue.
-     * Note that the message must be permanently removed from the queue
-     *
-     * @return MessageInterface
+     * {@inheritDoc}
      */
     public function dequeue()
     {
@@ -99,11 +92,7 @@ class BeanStalkQueue implements QueueInterface, SerializerAwareInterface
     }
 
     /**
-     * As the enqueue method, requeue will add the given message at the to of the queue.
-     * Requeueing message offer the opportunity to set an optional treatment for the given message.
-     *
-     * @param MessageInterface $message
-     * @return void
+     * {@inheritDoc}
      */
     public function requeue(MessageInterface $message)
     {
@@ -133,10 +122,7 @@ class BeanStalkQueue implements QueueInterface, SerializerAwareInterface
     }
 
     /**
-     * Delete a particular message
-     *
-     * @param MessageInterface $message
-     * @return void
+     * {@inheritDoc}
      */
     public function remove(MessageInterface $message)
     {
@@ -162,14 +148,13 @@ class BeanStalkQueue implements QueueInterface, SerializerAwareInterface
     }
 
     /**
-     * Count available jobs in queue
-     *
-     * @return int
+     * {@inheritDoc}
      */
     public function count()
     {
         $tube     = $this->config->getTube();
         $response = $this->client->statsTube($tube);
+
         return (int) $response->getArrayCopy()['current-jobs-ready'];
     }
 

@@ -8,7 +8,7 @@ interface JobManagerInterface
 {
     /**
      * @param MessageInterface $message
-     * @return JobResultInterface
+     * @return JobExecutionInterface
      */
     public function execute(MessageInterface $message);
 }

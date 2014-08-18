@@ -29,15 +29,14 @@ interface QueueManagerInterface
     public function create($options);
 
     /**
-     * Update the queue, with data if needed
+     * Update the queue
      *
      * @param QueueInterface $queue
-     * @param $data
      * @return void
      * @throws QueueNotFoundException   If the queue cannot be found
      * @throws RuntimeException         Otherwise
      */
-    public function update(QueueInterface $queue, $data = null);
+    public function update(QueueInterface $queue);
 
     /**
      * Permanently delete a queue.

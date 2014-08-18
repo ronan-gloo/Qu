@@ -36,10 +36,7 @@ class ZendQueue implements QueueInterface, SerializerAwareInterface
     }
 
     /**
-     * Insert a new message at the top of the queue
-     *
-     * @param MessageInterface $message
-     * @return void
+     * {@inheritDoc}
      */
     public function enqueue(MessageInterface $message)
     {
@@ -50,10 +47,7 @@ class ZendQueue implements QueueInterface, SerializerAwareInterface
     }
 
     /**
-     * Extract the message from the queue.
-     * Note that the message must be permanently removed from the queue
-     *
-     * @return MessageInterface
+     * {@inheritDoc}
      */
     public function dequeue()
     {
@@ -70,17 +64,7 @@ class ZendQueue implements QueueInterface, SerializerAwareInterface
     }
 
     /**
-     * To successfully run this action, you may know few concerns:
-     * The job must exists in queue, and "available", that means:
-     *  - Not currently running
-     *  - Not scheduled, waiting or pending
-     *
-     * Note that The MessageInterface will acquire a new id on success.
-     *
-     * @param MessageInterface $message
-     * @throws \Qu\Exception\RuntimeException
-     * @throws \Qu\Exception\OperationException
-     * @return MessageInterface|void
+     * {@inheritDoc}
      */
     public function requeue(MessageInterface $message)
     {
@@ -114,7 +98,6 @@ class ZendQueue implements QueueInterface, SerializerAwareInterface
     }
 
     /**
-     * @return \Qu\Iterator\QueueIteratorInterface|\Traversable|void
      * @throws \Qu\Exception\UnsupportedFeatureException
      */
     public function getIterator()
@@ -123,11 +106,7 @@ class ZendQueue implements QueueInterface, SerializerAwareInterface
     }
 
     /**
-     * Delete a particular message
-     *
-     * @param MessageInterface $message
-     * @throws \Qu\Exception\RuntimeException
-     * @return void
+     * {@inheritDoc}
      */
     public function remove(MessageInterface $message)
     {

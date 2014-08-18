@@ -52,10 +52,7 @@ class SqsQueue implements QueueInterface, SerializerAwareInterface
     }
 
     /**
-     * Insert a new message at the top of the queue
-     *
-     * @param MessageInterface $message
-     * @return void
+     * {@inheritDoc}
      */
     public function enqueue(MessageInterface $message)
     {
@@ -91,10 +88,7 @@ class SqsQueue implements QueueInterface, SerializerAwareInterface
     }
 
     /**
-     * Extract the message from the queue.
-     * Note that the message must be permanently removed from the queue
-     *
-     * @return MessageInterface|null
+     * {@inheritDoc}
      */
     public function dequeue()
     {
@@ -119,8 +113,7 @@ class SqsQueue implements QueueInterface, SerializerAwareInterface
     }
 
     /**
-     * @param MessageInterface $message
-     * @return void
+     * {@inheritDoc}
      */
     public function remove(MessageInterface $message)
     {
@@ -149,12 +142,7 @@ class SqsQueue implements QueueInterface, SerializerAwareInterface
     }
 
     /**
-     * As the enqueue method, requeue will add the given message at the to of the queue.
-     * Requeing message offer the opportunity to set an optional treatment for the given message.
-     *
-     * @param MessageInterface $message
-     * @throws \InvalidArgumentException
-     * @return void
+     * {@inheritDoc}
      */
     public function requeue(MessageInterface $message)
     {
@@ -168,7 +156,7 @@ class SqsQueue implements QueueInterface, SerializerAwareInterface
     }
 
     /**
-     * @return int
+     * {@inheritDoc}
      */
     public function count()
     {

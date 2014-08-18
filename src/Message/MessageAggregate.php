@@ -25,9 +25,8 @@ class MessageAggregate implements MessageAggregateInterface
         }
     }
 
-    /**w
-     * @param MessageInterface $message
-     * @return $this
+    /**
+     * {@inheritDoc}
      */
     public function addMessage(MessageInterface $message)
     {
@@ -37,7 +36,7 @@ class MessageAggregate implements MessageAggregateInterface
     }
 
     /**
-     * @return MessageInterface[]
+     * {@inheritDoc}
      */
     public function getMessages()
     {

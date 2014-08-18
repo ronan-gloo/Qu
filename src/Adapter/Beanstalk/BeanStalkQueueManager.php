@@ -6,6 +6,7 @@ use Pheanstalk\PheanstalkInterface;
 use Qu\Exception\InvalidArgumentException;
 use Qu\Exception\QueueNotFoundException;
 use Qu\Exception\RuntimeException;
+use Qu\Exception\UnsupportedFeatureException;
 use Qu\Queue\QueueInterface;
 use Qu\Queue\QueueManagerInterface;
 
@@ -44,9 +45,7 @@ class BeanStalkQueueManager implements QueueManagerInterface
     }
 
     /**
-     * @param mixed $name
-     * @return BeanStalkQueue|QueueInterface
-     * @throws \Qu\Exception\QueueNotFoundException
+     * {@inheritDoc}
      */
     public function get($name)
     {
@@ -59,27 +58,15 @@ class BeanStalkQueueManager implements QueueManagerInterface
     }
 
     /**
-     * Update the queue, with data if needed
-     *
-     * @param QueueInterface $queue
-     * @param $data
-     * @return void
-     * @throws QueueNotFoundException   If the queue cannot be found
-     * @throws RuntimeException         Otherwise
+     * {@inheritDoc}
      */
     public function update(QueueInterface $queue, $data = null)
     {
-        // nothing to do
+        throw new UnsupportedFeatureException('Tubes are not updatable');
     }
 
     /**
-     * Remove all available from the queue.
-     * implementations will assume that busy|invisible elements mst not be removed
-     *
-     * @param QueueInterface $queue
-     * @return void
-     * @throws QueueNotFoundException   If the queue cannot be found
-     * @throws RuntimeException         Otherwise
+     * {@inheritDoc}
      */
     public function flush(QueueInterface $queue)
     {
@@ -103,10 +90,7 @@ class BeanStalkQueueManager implements QueueManagerInterface
     /**
      * Beanstalk implicitly creates new tubes, so we just have to return the queue
      *
-     * @param array|BeanStalkQueueConfig $options
-     * @throws \Qu\Exception\RuntimeException
-     * @throws \Qu\Exception\InvalidArgumentException
-     * @return BeanStalkQueue|null
+     * {@inheritDoc}
      */
     public function create($options)
     {
@@ -134,12 +118,14 @@ class BeanStalkQueueManager implements QueueManagerInterface
     }
 
     /**
-     * @param BeanStalkQueue|QueueInterface $queue
-     * @throws \Qu\Exception\RuntimeException
-     * @return void
+     * {@inheritDoc}
      */
     public function remove(QueueInterface $queue)
     {
+        if (! $queue instanceof BeanStalkQueue) {
+            throw new InvalidArgumentException('Expecting a beanstak queue instance, got ' . get_class($queue));
+        }
+
         $this->flush($queue);
         $this->client->ignore($queue->getTube());
     }

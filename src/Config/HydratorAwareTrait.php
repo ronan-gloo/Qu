@@ -30,12 +30,13 @@ trait HydratorAwareTrait
     }
 
     /**
-     * @param array $array
+     * @param array $data
      * @return $this
      */
-    public function hydrate($array)
+    public function hydrate($data)
     {
-        $this->getHydrator()->hydrate($array, $this);
+        $this->getHydrator()->hydrate($data, $this);
+
         return $this;
     }
 }
