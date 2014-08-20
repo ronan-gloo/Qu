@@ -56,6 +56,7 @@ class SqsQueueManager implements QueueManagerInterface
 
     /**
      * Check if the name exists in the set of urls
+     *
      * @param $name
      * @return boolean
      */
@@ -82,7 +83,6 @@ class SqsQueueManager implements QueueManagerInterface
             $options = new SqsQueueConfig($options);
             $name = $options->getName();
         }
-
         elseif (is_string($options)) {
             $name = $options;
             $options = new SqsQueueConfig(['account_id' => $config->getAccountId()]);

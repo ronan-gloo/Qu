@@ -7,7 +7,7 @@ use Qu\Serializer\SerializerInterface;
 
 class ZendJobSerializer implements SerializerInterface
 {
-    const CALLBACK_URL_META = 'jbq-callback-url';
+    const CALLBACK_URL_META = 'zjq-callback-url';
 
     /**
      * @param MessageInterface $message
