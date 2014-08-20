@@ -1,6 +1,6 @@
 {
-    "name": "ronan-gloo/job-queue",
-    "description": "Queue management Abtraction",
+    "name": "ronan-gloo/qu",
+    "description": "Queue Job / Messaging management",
     "minimum-stability": "dev",
 
     "require-dev": {
