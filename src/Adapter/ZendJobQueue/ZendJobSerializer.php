@@ -3,9 +3,9 @@
 namespace Qu\Adapter\ZendJobQueue;
 
 use Qu\Message\MessageInterface;
-use Qu\Serializer\SerializerInterface;
+use Qu\Encoder\EncoderInterface;
 
-class ZendJobSerializer implements SerializerInterface
+class ZendJobEncoder implements EncoderInterface
 {
     const CALLBACK_URL_META = 'zjq-callback-url';
 
@@ -14,7 +14,7 @@ class ZendJobSerializer implements SerializerInterface
      * @param ZendQueueConfig $config
      * @return string
      */
-    public function serialize(MessageInterface $message, ZendQueueConfig $config = null)
+    public function encode(MessageInterface $message, ZendQueueConfig $config = null)
     {
         $timeString   = $message->getDelay() ? $message->getDelay() : $config->getScheduleDelay();
         $scheduleDate = date_create(sprintf('+ %d seconds', intval($timeString)));
@@ -39,7 +39,7 @@ class ZendJobSerializer implements SerializerInterface
      * @internal param string $string
      * @return MessageInterface
      */
-    public function unserialize($data)
+    public function decode($data)
     {
         if (! isset($data['name']) || ! class_exists($data['name'])) {
             return null;

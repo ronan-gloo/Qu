@@ -1,10 +1,10 @@
 <?php
 
-namespace Qu\Serializer;
+namespace Qu\Encoder;
 
 use Qu\Message\MessageInterface;
 
-class JsonSerializer implements SerializerInterface
+class JsonEncoder implements EncoderInterface
 {
     /**
      * @var array
@@ -56,7 +56,7 @@ class JsonSerializer implements SerializerInterface
      * {@inheritDoc}
      * @return string
      */
-    public function serialize(MessageInterface $message)
+    public function encode(MessageInterface $message)
     {
         $data = [
             'name' => get_class($message),
@@ -74,7 +74,7 @@ class JsonSerializer implements SerializerInterface
      * {@inheritDoc}
      * @param string
      */
-    public function unserialize($data)
+    public function decode($data)
     {
         $arguments = $this->decodeOptions;
         array_unshift($arguments, $data);

@@ -8,12 +8,12 @@ use Qu\Iterator\QueueIteratorAwareTrait;
 use Qu\Message\MessageAggregate;
 use Qu\Message\MessageInterface;
 use Qu\Queue\QueueInterface;
-use Qu\Serializer\SerializerAwareInterface;
-use Qu\Serializer\SerializerAwareTrait;
+use Qu\Encoder\EncoderAwareInterface;
+use Qu\Encoder\EncoderAwareTrait;
 
-class SqsQueue implements QueueInterface, SerializerAwareInterface
+class SqsQueue implements QueueInterface, EncoderAwareInterface
 {
-    use SerializerAwareTrait, QueueIteratorAwareTrait;
+    use EncoderAwareTrait, QueueIteratorAwareTrait;
 
     const RECEIPT_HANDLE_KEY = 'sqs-receipt-handle';
     const BATCH_MAX_SIZE     = 10;
@@ -61,7 +61,7 @@ class SqsQueue implements QueueInterface, SerializerAwareInterface
             return;
         }
 
-        $serializer = $this->getSerializer();
+        $serializer = $this->getEncoder();
         $config = $this->getConfig();
 
         $request = [
@@ -75,7 +75,7 @@ class SqsQueue implements QueueInterface, SerializerAwareInterface
                     'Id'           => $id,
                     'DelaySeconds' => $message->getMeta('delay') ?: $config->getDelaySeconds(),
                     'QueueUrl'     => $this->getUrl(),
-                    'MessageBody'  => $serializer->serialize($message)
+                    'MessageBody'  => $serializer->encode($message)
                 ];
             }
 
@@ -103,7 +103,7 @@ class SqsQueue implements QueueInterface, SerializerAwareInterface
         if ($response instanceof Model) {
             $data = $response->getPath('Messages/0');
             if ($data) {
-                $message = $this->getSerializer()->unserialize($data['Body']);
+                $message = $this->getEncoder()->decode($data['Body']);
                 $message->setId($data['MessageId']);
                 $message->setMeta(static::RECEIPT_HANDLE_KEY, $data['ReceiptHandle']);
             }

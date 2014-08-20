@@ -1,20 +1,20 @@
 <?php
 
-namespace Qu\Serializer;
+namespace Qu\Encoder;
 
 use Qu\Message\MessageInterface;
 
-interface SerializerInterface
+interface EncoderInterface
 {
     /**
      * @param MessageInterface $message
      * @return mixed
      */
-    public function serialize(MessageInterface $message);
+    public function encode(MessageInterface $message);
 
     /**
      * @param mixed $string
      * @return MessageInterface
      */
-    public function unserialize($string);
+    public function decode($string);
 }

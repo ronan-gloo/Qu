@@ -8,12 +8,12 @@ use Qu\Exception\UnsupportedFeatureException;
 use Qu\Iterator\QueueIteratorAwareTrait;
 use Qu\Message\MessageInterface;
 use Qu\Queue\QueueInterface;
-use Qu\Serializer\SerializerAwareInterface;
-use Qu\Serializer\SerializerAwareTrait;
+use Qu\Encoder\EncoderAwareInterface;
+use Qu\Encoder\EncoderAwareTrait;
 
-class ZendQueue implements QueueInterface, SerializerAwareInterface
+class ZendQueue implements QueueInterface, EncoderAwareInterface
 {
-    use SerializerAwareTrait, QueueIteratorAwareTrait;
+    use EncoderAwareTrait, QueueIteratorAwareTrait;
 
     /**
      * @var \ZendJobQueue
@@ -40,7 +40,7 @@ class ZendQueue implements QueueInterface, SerializerAwareInterface
      */
     public function enqueue(MessageInterface $message)
     {
-        $data  = $this->getSerializer()->serialize($message, $this->config);
+        $data  = $this->getEncoder()->encode($message, $this->config);
         $jobId = call_user_func_array([$this->client, 'createHttpJob'], $data);
 
         $jobId and $message->setId($jobId);
@@ -56,7 +56,7 @@ class ZendQueue implements QueueInterface, SerializerAwareInterface
         $message = null;
 
         if ($jobData) {
-            $message = $this->getSerializer()->unserialize($jobData);
+            $message = $this->getEncoder()->decode($jobData);
             $message->setId($this->client->getCurrentJobId());
         }
 

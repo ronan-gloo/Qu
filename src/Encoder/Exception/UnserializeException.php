@@ -1,6 +1,6 @@
 <?php
 
-namespace Qu\Serializer\Exception;
+namespace Qu\Encoder\Exception;
 
 use Qu\Exception\Exception;
 

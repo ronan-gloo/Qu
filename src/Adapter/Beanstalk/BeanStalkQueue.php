@@ -9,12 +9,12 @@ use Qu\Iterator\QueueIteratorAwareTrait;
 use Qu\Message\MessageAggregateInterface;
 use Qu\Message\MessageInterface;
 use Qu\Queue\QueueInterface;
-use Qu\Serializer\SerializerAwareInterface;
-use Qu\Serializer\SerializerAwareTrait;
+use Qu\Encoder\EncoderAwareInterface;
+use Qu\Encoder\EncoderAwareTrait;
 
-class BeanStalkQueue implements QueueInterface, SerializerAwareInterface
+class BeanStalkQueue implements QueueInterface, EncoderAwareInterface
 {
-    use QueueIteratorAwareTrait, SerializerAwareTrait;
+    use QueueIteratorAwareTrait, EncoderAwareTrait;
 
     /**
      * @var PheanstalkInterface;
@@ -49,7 +49,7 @@ class BeanStalkQueue implements QueueInterface, SerializerAwareInterface
 
         $jobId = $this->client->putInTube(
             $this->config->getTube(),
-            $this->getSerializer()->serialize($message),
+            $this->getEncoder()->encode($message),
             $message->getPriority() ?: $this->config->getPriority(),
             $message->getDelay() !== null ? $message->getDelay() : $this->config->getDelay(),
             $this->config->getTimeToRun()
@@ -84,7 +84,7 @@ class BeanStalkQueue implements QueueInterface, SerializerAwareInterface
         );
 
         if ($job instanceof Job) {
-            $msg = $this->getSerializer()->unserialize($job->getData());
+            $msg = $this->getEncoder()->decode($job->getData());
             $msg->setId($job->getId());
         }
 
