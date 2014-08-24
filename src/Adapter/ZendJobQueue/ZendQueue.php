@@ -7,11 +7,11 @@ use Qu\Exception\RuntimeException;
 use Qu\Exception\UnsupportedFeatureException;
 use Qu\Iterator\QueueIteratorAwareTrait;
 use Qu\Message\MessageInterface;
-use Qu\Queue\QueueInterface;
+use Qu\Queue\QueueAdapterInterface;
 use Qu\Encoder\EncoderAwareInterface;
 use Qu\Encoder\EncoderAwareTrait;
 
-class ZendQueue implements QueueInterface, EncoderAwareInterface
+class ZendQueueAdapter implements QueueAdapterInterface, EncoderAwareInterface
 {
     use EncoderAwareTrait, QueueIteratorAwareTrait;
 

@@ -36,7 +36,7 @@ interface QueueManagerInterface
      * @throws QueueNotFoundException   If the queue cannot be found
      * @throws RuntimeException         Otherwise
      */
-    public function update(QueueInterface $queue);
+    public function update(QueueAdapterInterface $queue);
 
     /**
      * Permanently delete a queue.
@@ -46,7 +46,7 @@ interface QueueManagerInterface
      * @throws QueueNotFoundException   If the queue cannot be found
      * @throws RuntimeException         Otherwise
      */
-    public function remove(QueueInterface $queue);
+    public function remove(QueueAdapterInterface $queue);
 
     /**
      * Remove all available from the queue.
@@ -57,5 +57,5 @@ interface QueueManagerInterface
      * @throws QueueNotFoundException   If the queue cannot be found
      * @throws RuntimeException         Otherwise
      */
-    public function flush(QueueInterface $queue);
+    public function flush(QueueAdapterInterface $queue);
 }

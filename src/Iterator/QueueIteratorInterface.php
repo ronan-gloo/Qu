@@ -2,7 +2,7 @@
 
 namespace Qu\Iterator;
 
-use Qu\Queue\QueueInterface;
+use Qu\Queue\QueueAdapterInterface;
 
 interface QueueIteratorInterface extends \Iterator
 {
@@ -10,5 +10,5 @@ interface QueueIteratorInterface extends \Iterator
      * @param QueueInterface $queue
      * @internal param int $mode
      */
-    public function __construct(QueueInterface $queue);
+    public function __construct(QueueAdapterInterface $queue);
 }

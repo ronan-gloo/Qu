@@ -9,21 +9,24 @@ class ClassMethodHydrator implements HydratorInterface
     /**
      * {@inheritDoc}
      */
-    public function hydrate($array, $object)
+    public function hydrate($traversable, $object)
     {
         if (! is_object($object)) {
             throw new InvalidArgumentException('Second argument must be an object');
         }
-        if (! is_array($array) && ! $array instanceof \Traversable) {
+        if (! is_array($traversable) && ! $traversable instanceof \Traversable) {
             throw new InvalidArgumentException('First argument must be traversable');
         }
 
-        foreach ($array as $key => $item) {
+        foreach ($traversable as $key => $item) {
             $setter = 'set' . str_replace('_', '', $key);
+
+            // Todo: must we be so resilient and do not inform the user on inaccessible methods ?
             if (is_callable([$object, $setter])) {
                 $object->$setter($item);
             }
         }
+
         return $object;
     }
 }

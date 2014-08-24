@@ -2,7 +2,7 @@
 
 namespace Qu\Iterator;
 
-use Qu\Queue\QueueInterface;
+use Qu\Queue\QueueAdapterInterface;
 
 class QueueIterator implements QueueIteratorInterface
 {
@@ -19,7 +19,7 @@ class QueueIterator implements QueueIteratorInterface
     /**
      * {@inheritDoc}
      */
-    public function __construct(QueueInterface $queue)
+    public function __construct(QueueAdapterInterface $queue)
     {
         $this->queue = $queue;
     }

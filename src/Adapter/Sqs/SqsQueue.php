@@ -4,19 +4,19 @@ namespace Qu\Adapter\Sqs;
 
 use Aws\Sqs\SqsClient;
 use Guzzle\Service\Resource\Model;
+use Qu\Exception\OperationException;
 use Qu\Iterator\QueueIteratorAwareTrait;
-use Qu\Message\MessageAggregate;
+use Qu\Message\MessageCollectionInterface;
 use Qu\Message\MessageInterface;
-use Qu\Queue\QueueInterface;
+use Qu\Queue\QueueAdapterInterface;
 use Qu\Encoder\EncoderAwareInterface;
 use Qu\Encoder\EncoderAwareTrait;
 
-class SqsQueue implements QueueInterface, EncoderAwareInterface
+class SqsQueue implements QueueAdapterInterface, EncoderAwareInterface
 {
     use EncoderAwareTrait, QueueIteratorAwareTrait;
 
     const RECEIPT_HANDLE_KEY = 'sqs-receipt-handle';
-    const BATCH_MAX_SIZE     = 10;
 
     /**
      * @var SqsClient
@@ -27,13 +27,6 @@ class SqsQueue implements QueueInterface, EncoderAwareInterface
      * @var SqsQueueConfig
      */
     protected $config;
-
-    /**
-     * Number of items per batch request
-     *
-     * @var int
-     */
-    protected $batchSize = self::BATCH_MAX_SIZE;
 
     /**
      * @var string
@@ -52,40 +45,81 @@ class SqsQueue implements QueueInterface, EncoderAwareInterface
     }
 
     /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param SqsQueue $queue
+     * @return $this
+     */
+    public function exchangeUrl(SqsQueue $queue)
+    {
+        $this->url = $queue->url;
+
+        return $this;
+    }
+
+    /**
+     * @return \Qu\Adapter\Sqs\SqsQueueConfig
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function enqueue(MessageInterface $message)
     {
-        $messages = $message instanceof MessageAggregate ? $message->getMessages() : [$message];
-        if (! $messages) {
-            return;
+        $result = $this->client->sendMessage([
+            'QueueUrl'     => $this->getUrl(),
+            'MessageBody'  => $this->getEncoder()->encode($message),
+            'DelaySeconds' => $this->getMessageDelay($message)
+        ]);
+
+        if ($result instanceof Model) {
+            $message->setId($result->get('MessageId'));
         }
+    }
 
+    /**
+     * Message batch processing
+     *
+     * @param $messages
+     * @return mixed
+     */
+    public function enqueueAll(MessageCollectionInterface $messages)
+    {
         $serializer = $this->getEncoder();
-        $config = $this->getConfig();
-
         $request = [
             'QueueUrl' => $this->getUrl(),
             'Entries'  => []
         ];
 
-        foreach (array_chunk($messages, $this->batchSize) as $chunk) {
+        $messages = $messages->getMessages();
+        foreach (array_chunk($messages, $this->config->getBatchSize()) as $chunk) {
             foreach ($chunk as $id => $message) {
                 $request['Entries'][$id] = [
                     'Id'           => $id,
-                    'DelaySeconds' => $message->getMeta('delay') ?: $config->getDelaySeconds(),
+                    'DelaySeconds' => $this->getMessageDelay($message),
                     'QueueUrl'     => $this->getUrl(),
                     'MessageBody'  => $serializer->encode($message)
                 ];
             }
 
-            $items = $this->client->sendMessageBatch($request)->getPath('Successful') ?: [];
-
+            $result = $this->client->sendMessageBatch($request);
+            $items  = $result->getPath('Successful') ?: [];
             foreach ($items as $item) {
                 $messages[$item['Id']]->setId($item['MessageId']);
             }
         }
     }
+
 
     /**
      * {@inheritDoc}
@@ -113,30 +147,51 @@ class SqsQueue implements QueueInterface, EncoderAwareInterface
     }
 
     /**
-     * {@inheritDoc}
+     * Remove permanently a particular message from the queue
+     *
+     * @param MessageInterface $message
+     * @throws \Qu\Exception\OperationException
+     * @return void
      */
     public function remove(MessageInterface $message)
     {
-        $messages = $message instanceof MessageAggregate ? $message->getMessages() : [$message];
-        if (! $messages) {
-            return;
+        try {
+            $this->client->deleteMessage([
+                'QueueUrl'      => $this->getUrl(),
+                'ReceiptHandle' => $message->getMeta(static::RECEIPT_HANDLE_KEY),
+            ]);
+        }
+        catch (\Exception $e) {
+            throw new OperationException($e->getMessage(), 0, $e);
         }
 
+        $message->setId(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeAll(MessageCollectionInterface $messages)
+    {
         $request = [
             'QueueUrl' => $this->getUrl(),
             'Entries'  => []
         ];
 
-        foreach (array_chunk($messages, $this->batchSize) as $chunk) {
-            foreach ($chunk as $Id => $msg) {
+        $messages = $messages->getMessages();
+        foreach (array_chunk($messages, $this->config->getBatchSize()) as $chunk) {
+            foreach ($chunk as $Id => $message) {
                 $ReceiptHandle = $message->getMeta(static::RECEIPT_HANDLE_KEY);
                 if ($ReceiptHandle) {
-                    $request['Entries'][] = compact('Id', 'ReceiptHandle');
+                    $request['Entries'][$Id] = compact('Id', 'ReceiptHandle');
                 }
             }
 
             if ($request['Entries']) {
-                $this->client->deleteMessageBatch($request);
+                $result = $this->client->deleteMessageBatch($request);
+                foreach ($result->get('Successful') as $row) {
+                    $messages[$row['Id']]->setId(null);
+                }
             }
         }
     }
@@ -149,10 +204,25 @@ class SqsQueue implements QueueInterface, EncoderAwareInterface
         $receiptHandle = $message->getMeta(static::RECEIPT_HANDLE_KEY);
 
         if (! $message->getId() || ! $receiptHandle) {
-            throw new \InvalidArgumentException('Message as not been in queue previously');
+            throw new OperationException('Message as not been in queue previously');
         }
 
         $this->enqueue($message);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function requeueAll(MessageCollectionInterface $messages)
+    {
+        foreach ($messages->getMessages() as $message) {
+            $receiptHandle = $message->getMeta(static::RECEIPT_HANDLE_KEY);
+            if (! $receiptHandle || null === $message->getId()) {
+                throw new OperationException('Message as not been in queue previously');
+            }
+        }
+
+        $this->enqueueAll($messages);
     }
 
     /**
@@ -169,29 +239,13 @@ class SqsQueue implements QueueInterface, EncoderAwareInterface
     }
 
     /**
-     * @return string
+     * If no delay is set in the message, we fallback to the queue config message delay
+     *
+     * @param MessageInterface $message
+     * @return int|mixed
      */
-    public function getUrl()
+    protected function getMessageDelay(MessageInterface $message)
     {
-        return $this->url;
-    }
-
-    /**
-     * @param \Qu\Adapter\Sqs\SqsQueue|string $queue
-     * @return self
-     */
-    public function exchangeUrl(SqsQueue $queue)
-    {
-        $this->url = $queue->url;
-
-        return $this;
-    }
-
-    /**
-     * @return \Qu\Adapter\Sqs\SqsQueueConfig
-     */
-    public function getConfig()
-    {
-        return $this->config;
+        return $message->getDelay() === null ? $this->config->getDelaySeconds() : $message->getDelay();
     }
 }

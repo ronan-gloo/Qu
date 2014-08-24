@@ -3,20 +3,20 @@
 namespace Qu\Service;
 
 use Qu\Message\MessageInterface;
-use Qu\Queue\QueueInterface;
+use Qu\Queue\QueueAdapterInterface;
 use Traversable;
 
 /**
  * add Extra functionnalities to queues
  */
-class QueueService implements QueueInterface
+class QueueService implements QueueAdapterInterface
 {
     protected $queue;
 
     /**
      * @param QueueInterface $queue
      */
-    public function __construct(QueueInterface $queue)
+    public function __construct(QueueAdapterInterface $queue)
     {
         $this->queue = $queue;
     }

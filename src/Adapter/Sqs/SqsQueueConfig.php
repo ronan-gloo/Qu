@@ -4,6 +4,7 @@ namespace Qu\Adapter\Sqs;
 
 use Qu\Config\HydratorAwareInterface;
 use Qu\Config\HydratorAwareTrait;
+use Qu\Exception\InvalidArgumentException;
 
 class SqsQueueConfig implements HydratorAwareInterface
 {
@@ -14,13 +15,14 @@ class SqsQueueConfig implements HydratorAwareInterface
     const DEFAULT_MAX_MESSAGE_SIZE   = 262144; // bytes
     const DEFAULT_VISIBILITY_TIMEOUT = 30;     // seconds
     const DEFAULT_POLLING_TIME       = 20;     // seconds
+    const BATCH_MAX_SIZE             = 10;
 
     /**
      * Properties blacklist when exporting attributes
      *
      * @var array
      */
-    private static $skippedAttributes = ['accountId', 'name', 'hydrator'];
+    private static $skippedAttributes = ['accountId', 'name', 'arrayHydrator'];
 
     /**
      * Defer, in seconds, the availability of the message in tth queue
@@ -56,6 +58,13 @@ class SqsQueueConfig implements HydratorAwareInterface
      * @var int
      */
     protected $messageRetentionPeriod = self::DEFAULT_RETENTION_PERIOD;
+
+    /**
+     * The number of message to treat per batch
+     *
+     * @var int
+     */
+    protected $batchSize = self::BATCH_MAX_SIZE;
 
     /**
      * @var int
@@ -217,5 +226,31 @@ class SqsQueueConfig implements HydratorAwareInterface
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @param int $batchSize
+     * @throws \Qu\Exception\InvalidArgumentException
+     * @return self
+     */
+    public function setBatchSize($batchSize)
+    {
+        $intValue = (int) $batchSize;
+
+        if ($intValue > static::BATCH_MAX_SIZE) {
+            throw new InvalidArgumentException(sprintf('Batch size cannot exceed %d items', static::BATCH_MAX_SIZE));
+        }
+
+        $this->batchSize = $batchSize;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getBatchSize()
+    {
+        return $this->batchSize;
     }
 }

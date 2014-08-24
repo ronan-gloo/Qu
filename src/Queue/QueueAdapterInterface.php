@@ -2,9 +2,10 @@
 
 namespace Qu\Queue;
 
+use Qu\Message\MessageCollectionInterface;
 use Qu\Message\MessageInterface;
 
-interface QueueInterface extends \IteratorAggregate, \Countable
+interface QueueAdapterInterface extends \IteratorAggregate, \Countable
 {
     /**
      * Insert a new message at the top of the queue
@@ -13,6 +14,14 @@ interface QueueInterface extends \IteratorAggregate, \Countable
      * @return void
      */
     public function enqueue(MessageInterface $message);
+
+    /**
+     * Message batch processing
+     *
+     * @param $messages
+     * @return mixed
+     */
+    public function enqueueAll(MessageCollectionInterface $messages);
 
     /**
      * Extract the message from the queue.
@@ -32,12 +41,28 @@ interface QueueInterface extends \IteratorAggregate, \Countable
     public function requeue(MessageInterface $message);
 
     /**
+     * Message batch processing
+     *
+     * @param $messages
+     * @return mixed
+     */
+    public function requeueAll(MessageCollectionInterface $messages);
+
+    /**
      * Remove permanently a particular message from the queue
      *
      * @param MessageInterface $message
      * @return void
      */
     public function remove(MessageInterface $message);
+
+    /**
+     * Message batch processing
+     *
+     * @param $messages
+     * @return mixed
+     */
+    public function removeAll(MessageCollectionInterface $messages);
 
     /**
      * Return the number of actual available items in queue.
@@ -48,7 +73,7 @@ interface QueueInterface extends \IteratorAggregate, \Countable
     public function count();
 
     /**
-     * @return \Traversable|\Qu\Iterator\QueueIteratorInterface
+     * @return \Qu\Iterator\QueueIteratorInterface
      */
     public function getIterator();
 }

@@ -3,11 +3,11 @@
 namespace Qu\Message;
 
 /**
- * Generic message class
+ * Generic message class implementation
  */
 class Message implements MessageInterface
 {
-    use MessageImplementTrait;
+    use MessagePrototypeTrait;
 
     /**
      * @param array $metadata

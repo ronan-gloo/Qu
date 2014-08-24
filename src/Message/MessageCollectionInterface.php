@@ -2,7 +2,7 @@
 
 namespace Qu\Message;
 
-interface MessageAggregateInterface extends MessageInterface
+interface MessageCollectionInterface
 {
     /**
      * @param MessageInterface $message

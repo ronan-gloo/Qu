@@ -7,7 +7,7 @@ use Qu\Exception\InvalidArgumentException;
 use Qu\Exception\QueueNotFoundException;
 use Qu\Exception\RuntimeException;
 use Qu\Exception\UnsupportedFeatureException;
-use Qu\Queue\QueueInterface;
+use Qu\Queue\QueueAdapterInterface;
 use Qu\Queue\QueueManagerInterface;
 
 class BeanStalkQueueManager implements QueueManagerInterface
@@ -60,7 +60,7 @@ class BeanStalkQueueManager implements QueueManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function update(QueueInterface $queue, $data = null)
+    public function update(QueueAdapterInterface $queue, $data = null)
     {
         throw new UnsupportedFeatureException('Tubes are not updatable');
     }
@@ -68,7 +68,7 @@ class BeanStalkQueueManager implements QueueManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function flush(QueueInterface $queue)
+    public function flush(QueueAdapterInterface $queue)
     {
         if (! $queue instanceof BeanStalkQueue) {
             throw new RuntimeException(sprintf(
@@ -120,7 +120,7 @@ class BeanStalkQueueManager implements QueueManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function remove(QueueInterface $queue)
+    public function remove(QueueAdapterInterface $queue)
     {
         if (! $queue instanceof BeanStalkQueue) {
             throw new InvalidArgumentException('Expecting a beanstak queue instance, got ' . get_class($queue));

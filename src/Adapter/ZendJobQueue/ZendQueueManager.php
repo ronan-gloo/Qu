@@ -5,7 +5,7 @@ namespace Qu\Adapter\ZendJobQueue;
 use Qu\Exception\QueueNotFoundException;
 use Qu\Exception\RuntimeException;
 use Qu\Exception\UnsupportedFeatureException;
-use Qu\Queue\QueueInterface;
+use Qu\Queue\QueueAdapterInterface;
 use Qu\Queue\QueueManagerInterface;
 
 class ZendQueueManager implements QueueManagerInterface
@@ -41,7 +41,7 @@ class ZendQueueManager implements QueueManagerInterface
     /**
      * @throws \Qu\Exception\UnsupportedFeatureException
      */
-    public function update(QueueInterface $queue, $data = null)
+    public function update(QueueAdapterInterface $queue, $data = null)
     {
         throw new UnsupportedFeatureException('Zend job queue does not supports queue update');
     }
@@ -50,7 +50,7 @@ class ZendQueueManager implements QueueManagerInterface
      * @param QueueInterface $queue
      * @throws \Qu\Exception\UnsupportedFeatureException
      */
-    public function remove(QueueInterface $queue)
+    public function remove(QueueAdapterInterface $queue)
     {
         throw new UnsupportedFeatureException('Zend job queue does not supports queue deletion');
     }
@@ -58,7 +58,7 @@ class ZendQueueManager implements QueueManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function flush(QueueInterface $queue)
+    public function flush(QueueAdapterInterface $queue)
     {
         $jobs = $this->client->getJobsList();
 

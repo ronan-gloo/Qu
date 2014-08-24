@@ -5,7 +5,7 @@ namespace Qu\Message;
 /**
  * Provides a standard implementation of the message interface
  */
-trait MessageImplementTrait
+trait MessagePrototypeTrait
 {
     /**
      * @var string

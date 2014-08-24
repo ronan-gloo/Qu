@@ -6,7 +6,7 @@ use Aws\Sqs\SqsClient;
 use Qu\Exception\InvalidArgumentException;
 use Qu\Exception\QueueNotFoundException;
 use Qu\Exception\RuntimeException;
-use Qu\Queue\QueueInterface;
+use Qu\Queue\QueueAdapterInterface;
 use Qu\Queue\QueueManagerInterface;
 
 class SqsQueueManager implements QueueManagerInterface
@@ -112,7 +112,7 @@ class SqsQueueManager implements QueueManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function remove(QueueInterface $queue)
+    public function remove(QueueAdapterInterface $queue)
     {
         if (! $queue instanceof SqsQueue || ! $this->exists($queue)) {
             throw new QueueNotFoundException('The specified queue does not exists');
@@ -129,7 +129,7 @@ class SqsQueueManager implements QueueManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function flush(QueueInterface $queue)
+    public function flush(QueueAdapterInterface $queue)
     {
         if (! $queue instanceof SqsQueue) {
             throw new InvalidArgumentException('expecting an instance of SqsQueue');
@@ -147,7 +147,7 @@ class SqsQueueManager implements QueueManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function update(QueueInterface $queue)
+    public function update(QueueAdapterInterface $queue)
     {
         if (! $queue instanceof SqsQueue) {
             throw new InvalidArgumentException('expecting an instance of SqsQueue');

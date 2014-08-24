@@ -6,13 +6,13 @@ use Pheanstalk\Job;
 use Pheanstalk\PheanstalkInterface;
 use Qu\Exception\Exception;
 use Qu\Iterator\QueueIteratorAwareTrait;
-use Qu\Message\MessageAggregateInterface;
+use Qu\Message\MessageCollectionInterface;
 use Qu\Message\MessageInterface;
-use Qu\Queue\QueueInterface;
+use Qu\Queue\QueueAdapterInterface;
 use Qu\Encoder\EncoderAwareInterface;
 use Qu\Encoder\EncoderAwareTrait;
 
-class BeanStalkQueue implements QueueInterface, EncoderAwareInterface
+class BeanStalkQueue implements QueueAdapterInterface, EncoderAwareInterface
 {
     use QueueIteratorAwareTrait, EncoderAwareTrait;
 
@@ -42,11 +42,6 @@ class BeanStalkQueue implements QueueInterface, EncoderAwareInterface
      */
     public function enqueue(MessageInterface $message)
     {
-        if ($message instanceof MessageAggregateInterface) {
-            $this->enqueueAll($message->getMessages());
-            return;
-        }
-
         $jobId = $this->client->putInTube(
             $this->config->getTube(),
             $this->getEncoder()->encode($message),
@@ -63,9 +58,9 @@ class BeanStalkQueue implements QueueInterface, EncoderAwareInterface
     }
 
     /**
-     * @param $messages
+     * {@inheritDoc}
      */
-    public function enqueueAll($messages)
+    public function enqueueAll(MessageCollectionInterface $messages)
     {
         foreach ($messages as $message) {
             $this->enqueue($message);
@@ -96,11 +91,6 @@ class BeanStalkQueue implements QueueInterface, EncoderAwareInterface
      */
     public function requeue(MessageInterface $message)
     {
-        if ($message instanceof MessageAggregateInterface) {
-            $this->requeueAll($message->getMessages());
-            return;
-        }
-
         try {
             $this->client->release($message,
                 $message->getPriority() !== null ? $message->getPriority() : $this->config->getPriority(),
@@ -111,10 +101,9 @@ class BeanStalkQueue implements QueueInterface, EncoderAwareInterface
     }
 
     /**
-     * @param array|\Traversable $messages
-     * @return void
+     * {@inheritDoc}
      */
-    public function requeueAll($messages)
+    public function requeueAll(MessageCollectionInterface $messages)
     {
         foreach ($messages as $message) {
             $this->requeue($message);
@@ -126,10 +115,6 @@ class BeanStalkQueue implements QueueInterface, EncoderAwareInterface
      */
     public function remove(MessageInterface $message)
     {
-        if ($message instanceof MessageAggregateInterface) {
-            $this->deleteAll($message->getMessages());
-            return;
-        }
         try {
             $this->client->delete($message);
         }
@@ -137,10 +122,9 @@ class BeanStalkQueue implements QueueInterface, EncoderAwareInterface
     }
 
     /**
-     * @param array|\Traversable $messages
-     * @return void
+     * {@inheritDoc}
      */
-    public function deleteAll($messages)
+    public function removeAll(MessageCollectionInterface $messages)
     {
         foreach ($messages as $message) {
             $this->remove($message);
