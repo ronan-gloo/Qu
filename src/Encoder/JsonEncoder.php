@@ -59,9 +59,12 @@ class JsonEncoder implements EncoderInterface
     public function encode(MessageInterface $message)
     {
         $data = [
-            'name' => get_class($message),
-            'meta' => $message->getMeta(),
-            'data' => $message->getData()
+            'name'     => get_class($message),
+            'id'       => $message->getId(),
+            'priority' => $message->getPriority(),
+            'delay'    => $message->getDelay(),
+            'metadata' => $message->getMetadata(),
+            'data'     => $message->getData(),
         ];
 
         $arguments = $this->encodeOptions;
@@ -79,8 +82,7 @@ class JsonEncoder implements EncoderInterface
         $arguments = $this->decodeOptions;
         array_unshift($arguments, $data);
 
-        $data = call_user_func_array('json_decode', $arguments);
-
+        $data = (array) call_user_func_array('json_decode', $arguments);
         if (! isset($data['name']) || ! class_exists($data['name'])) {
             return null;
         }
@@ -88,8 +90,17 @@ class JsonEncoder implements EncoderInterface
         /** @var MessageInterface $message */
         $message = new $data['name'];
 
-        if (isset($data['meta'])) {
-            $message->setMeta($data['meta']);
+        if (isset($data['id'])) {
+            $message->setId($data['id']);
+        }
+        if (isset($data['delay'])) {
+            $message->setDelay($data['delay']);
+        }
+        if (isset($data['priority'])) {
+            $message->setPriority($data['priority']);
+        }
+        if (isset($data['metadata'])) {
+            $message->setMetadata($data['metadata']);
         }
         if (isset($data['data'])) {
             $message->setData($data['data']);

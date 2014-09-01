@@ -20,10 +20,10 @@ class ZendJobEncoder implements EncoderInterface
         $scheduleDate = date_create(sprintf('+ %d seconds', intval($timeString)));
 
         return [
-            $message->getMeta(static::CALLBACK_URL_META) ?: $config->getCallbackUrl(),
+            $message->getMetadata(static::CALLBACK_URL_META) ?: $config->getCallbackUrl(),
             [
                 'name' => get_class($message),
-                'meta' => $message->getMeta(),
+                'meta' => $message->getMetadata(),
                 'data' => $message->getData()
             ],
             [
@@ -48,7 +48,7 @@ class ZendJobEncoder implements EncoderInterface
         /** @var MessageInterface $message */
         $message = new $data['name'];
         if (isset($data['meta'])) {
-            $message->setMeta($data['meta']);
+            $message->setMetadata($data['meta']);
         }
         if (isset($data['data'])) {
             $message->setData($data['data']);

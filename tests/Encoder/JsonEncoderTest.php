@@ -35,7 +35,7 @@ class JsonEncoderTest extends \PHPUnit_Framework_TestCase
         $message = $this->getMock('Qu\Message\MessageInterface');
         $message
             ->expects($this->once())
-            ->method('getMeta')
+            ->method('getMetadata')
             ->will($this->returnValue($meta = ['meta' => 'content']))
         ;
 
@@ -47,9 +47,12 @@ class JsonEncoderTest extends \PHPUnit_Framework_TestCase
 
         $serialized = $this->instance->encode($message);
         $this->assertJsonStringEqualsJsonString($serialized, json_encode([
-            'name' => get_class($message),
-            'meta' => $meta,
-            'data' => $data,
+            'name'     => get_class($message),
+            'delay'    => null,
+            'priority' => null,
+            'id'       => null,
+            'metadata' => $meta,
+            'data'     => $data,
         ]));
     }
 
@@ -63,7 +66,7 @@ class JsonEncoderTest extends \PHPUnit_Framework_TestCase
         $decoded = $this->instance->decode($encoded);
         $this->assertEquals($decoded, $message);
 
-        $message->setMeta($data = ['test' => 'meta']);
+        $message->setMetadata($data = ['test' => 'meta']);
         $message->setData($data = ['test' => 'data']);
 
         $encoded = $this->instance->encode($message);

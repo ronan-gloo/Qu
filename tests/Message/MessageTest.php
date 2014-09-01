@@ -18,7 +18,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     {
         $message = new Message('test');
         $this->assertSame(['body' => 'test'], $message->getData());
-        $this->assertSame([], $message->getMeta());
+        $this->assertSame([], $message->getMetadata());
 
         $this->assertNull($message->getId());
         $this->assertNull($message->getPriority());

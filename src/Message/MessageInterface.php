@@ -28,13 +28,13 @@ interface MessageInterface
      * @param $name
      * @return mixed
      */
-    public function getMeta($name = null);
+    public function getMetadata($name = null);
 
     /**
      * @param $name
      * @return self
      */
-    public function setMeta($name);
+    public function setMetadata($name);
 
     /**
      * @param string $name

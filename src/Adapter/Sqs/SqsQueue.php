@@ -139,7 +139,7 @@ class SqsQueue implements QueueAdapterInterface, EncoderAwareInterface
             if ($data) {
                 $message = $this->getEncoder()->decode($data['Body']);
                 $message->setId($data['MessageId']);
-                $message->setMeta(static::RECEIPT_HANDLE_KEY, $data['ReceiptHandle']);
+                $message->setMetadata(static::RECEIPT_HANDLE_KEY, $data['ReceiptHandle']);
             }
         }
 
@@ -158,7 +158,7 @@ class SqsQueue implements QueueAdapterInterface, EncoderAwareInterface
         try {
             $this->client->deleteMessage([
                 'QueueUrl'      => $this->getUrl(),
-                'ReceiptHandle' => $message->getMeta(static::RECEIPT_HANDLE_KEY),
+                'ReceiptHandle' => $message->getMetadata(static::RECEIPT_HANDLE_KEY),
             ]);
         }
         catch (\Exception $e) {
@@ -201,7 +201,7 @@ class SqsQueue implements QueueAdapterInterface, EncoderAwareInterface
      */
     public function requeue(MessageInterface $message)
     {
-        $receiptHandle = $message->getMeta(static::RECEIPT_HANDLE_KEY);
+        $receiptHandle = $message->getMetadata(static::RECEIPT_HANDLE_KEY);
 
         if (! $message->getId() || ! $receiptHandle) {
             throw new OperationException('Message as not been in queue previously');
@@ -216,7 +216,7 @@ class SqsQueue implements QueueAdapterInterface, EncoderAwareInterface
     public function requeueAll(MessageCollectionInterface $messages)
     {
         foreach ($messages->getMessages() as $message) {
-            $receiptHandle = $message->getMeta(static::RECEIPT_HANDLE_KEY);
+            $receiptHandle = $message->getMetadata(static::RECEIPT_HANDLE_KEY);
             if (! $receiptHandle || null === $message->getId()) {
                 throw new OperationException('Message as not been in queue previously');
             }

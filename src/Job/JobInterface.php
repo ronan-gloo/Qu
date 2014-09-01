@@ -8,7 +8,7 @@ interface JobInterface extends MessageInterface
 {
     /**
      * Invoke the job execution
-     * JobResultInterface must acquire a status before to be returned
+     * Result must acquire a status before to be returned
      *
      * @return JobExecutionInterface
      */

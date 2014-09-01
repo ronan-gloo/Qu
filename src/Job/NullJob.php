@@ -10,9 +10,9 @@ class NullJob implements JobInterface
 
     public function getId() {}
 
-    public function getMeta($name = null) {}
+    public function getMetadata($name = null) {}
 
-    public function setMeta($name) {}
+    public function setMetadata($name) {}
 
     public function setData($name) {}
 

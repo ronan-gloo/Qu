@@ -53,6 +53,7 @@ class Queue implements QueueInterface
 
         if (is_array($message)) {
             $this->getAdapter()->enqueue(new Message($message));
+            return;
         }
 
         throw new InvalidArgumentException;

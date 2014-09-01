@@ -7,10 +7,12 @@ namespace Qu\Message;
  */
 trait MessagePrototypeTrait
 {
+    protected $id;
+
     /**
      * @var string
      */
-    protected $meta = [];
+    protected $metadata = [];
 
     /**
      * @var array
@@ -23,7 +25,7 @@ trait MessagePrototypeTrait
      */
     public function setId($id)
     {
-        $this->setMeta('id', $id);
+        $this->id = $id;
 
         return $this;
     }
@@ -33,20 +35,20 @@ trait MessagePrototypeTrait
      */
     public function getId()
     {
-        return $this->getMeta('id');
+        return $this->id;
     }
 
     /**
      * @param $name
      * @return mixed
      */
-    public function getMeta($name = null)
+    public function getMetadata($name = null)
     {
         if (null === $name) {
-            return $this->meta;
+            return $this->metadata;
         }
 
-        return isset($this->meta[$name]) ? $this->meta[$name] : null;
+        return isset($this->metadata[$name]) ? $this->metadata[$name] : null;
     }
 
     /**
@@ -54,14 +56,14 @@ trait MessagePrototypeTrait
      * @param mixed $value
      * @return self
      */
-    public function setMeta($name, $value = null)
+    public function setMetadata($name, $value = null)
     {
         if (func_num_args() === 2) {
             $name = [$name => $value];
         }
 
         foreach ($name as $key => $val) {
-            $this->meta[$key] = $val;
+            $this->metadata[$key] = $val;
         }
 
         return $this;
@@ -104,7 +106,7 @@ trait MessagePrototypeTrait
      */
     public function setDelay($delay)
     {
-        $this->setMeta('delay', $delay);
+        $this->setMetadata('delay', $delay);
 
         return $this;
     }
@@ -114,7 +116,7 @@ trait MessagePrototypeTrait
      */
     public function getDelay()
     {
-        return $this->getMeta('delay');
+        return $this->getMetadata('delay');
     }
 
     /**
@@ -123,7 +125,7 @@ trait MessagePrototypeTrait
      */
     public function setPriority($priority)
     {
-        $this->setMeta('priority', $priority);
+        $this->setMetadata('priority', $priority);
 
         return $this;
     }
@@ -133,7 +135,7 @@ trait MessagePrototypeTrait
      */
     public function getPriority()
     {
-        return $this->getMeta('priority');
+        return $this->getMetadata('priority');
     }
 
     /**

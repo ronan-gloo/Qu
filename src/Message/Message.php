@@ -23,7 +23,7 @@ class Message implements MessageInterface
             $body = compact('body');
         }
 
-        $this->meta = $metadata;
+        $this->metadata = $metadata;
         $this->data = $body;
     }
 }

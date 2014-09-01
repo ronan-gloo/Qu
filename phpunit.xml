@@ -24,7 +24,7 @@
     </filter>
 
     <testsuites>
-        <testsuite name="Qu testsuite">
+        <testsuite name="Qu">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
