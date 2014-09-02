@@ -2,6 +2,8 @@
 
 namespace Qu\Iterator;
 
+use Qu\Queue\QueueInterface;
+
 trait QueueIteratorAwareTrait
 {
     /**
@@ -11,10 +13,13 @@ trait QueueIteratorAwareTrait
 
     /**
      * @param QueueIteratorInterface $iterator
+     * @return $this
      */
     public function setIterator(QueueIteratorInterface $iterator)
     {
         $this->iterator = $iterator;
+
+        return $this;
     }
 
     /**
@@ -22,7 +27,7 @@ trait QueueIteratorAwareTrait
      */
     public function getIterator()
     {
-        if (null === $this->iterator) {
+        if (null === $this->iterator && $this instanceof QueueInterface) {
             $this->iterator = new QueueIterator($this);
         }
         return $this->iterator;
