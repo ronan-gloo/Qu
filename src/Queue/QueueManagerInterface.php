@@ -14,7 +14,7 @@ interface QueueManagerInterface
      * according $options parameters.
      *
      * @param mixed $options
-     * @return QueueInterface
+     * @return QueueAdapterInterface
      * @throws QueueNotFoundException   If the queue does not exists
      * @throws RuntimeException         Otherwise
      */

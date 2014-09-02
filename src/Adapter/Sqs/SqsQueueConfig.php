@@ -22,7 +22,7 @@ class SqsQueueConfig implements HydratorAwareInterface
      *
      * @var array
      */
-    private static $skippedAttributes = ['accountId', 'name', 'arrayHydrator'];
+    private static $skippedAttributes = ['accountId', 'name', 'arrayHydrator', 'batchSize'];
 
     /**
      * Defer, in seconds, the availability of the message in tth queue

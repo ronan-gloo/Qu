@@ -20,8 +20,6 @@ class ClassMethodHydrator implements HydratorInterface
 
         foreach ($traversable as $key => $item) {
             $setter = 'set' . str_replace('_', '', $key);
-
-            // Todo: must we be so resilient and do not inform the user on inaccessible methods ?
             if (is_callable([$object, $setter])) {
                 $object->$setter($item);
             }

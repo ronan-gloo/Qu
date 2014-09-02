@@ -36,7 +36,7 @@ class JsonEncoder implements EncoderInterface
 
     /**
      * @param array $encodeOptions
-     * @return self
+     * @return selfw
      */
     public function setEncodeOptions(array $encodeOptions)
     {
