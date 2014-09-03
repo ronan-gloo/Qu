@@ -164,8 +164,6 @@ class SqsQueue implements QueueAdapterInterface, EncoderAwareInterface
         catch (\Exception $e) {
             throw new OperationException($e->getMessage(), 0, $e);
         }
-
-        $message->setId(null);
     }
 
     /**
@@ -184,13 +182,6 @@ class SqsQueue implements QueueAdapterInterface, EncoderAwareInterface
                 $ReceiptHandle = $message->getMeta(static::RECEIPT_HANDLE_KEY);
                 if ($ReceiptHandle) {
                     $request['Entries'][$Id] = compact('Id', 'ReceiptHandle');
-                }
-            }
-
-            if ($request['Entries']) {
-                $result = $this->client->deleteMessageBatch($request);
-                foreach ($result->get('Successful') as $row) {
-                    $messages[$row['Id']]->setId(null);
                 }
             }
         }
