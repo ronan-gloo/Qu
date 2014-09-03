@@ -96,7 +96,7 @@ class JobExecution implements JobExecutionInterface
      */
     public function processed()
     {
-        return static::STATUS_UNPROCESSED === $this->status;
+        return static::STATUS_UNPROCESSED !== $this->status;
     }
 
     /**

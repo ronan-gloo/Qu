@@ -89,7 +89,7 @@ trait MessagePrototypeTrait
 
     /**
      * @param null $name
-     * @return self
+     * @return mixed
      */
     public function getData($name = null)
     {
