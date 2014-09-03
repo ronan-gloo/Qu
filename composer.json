@@ -17,5 +17,10 @@
         "psr-4" : {
             "Qu\\": "src/"
         }
+    },
+
+    "suggest": {
+        "aws/aws-sdk-php": "Aws sdk for Sqs adapter",
+        "pda/pheanstalk": "Pheanstalk sdk for Beandstalk adapter"
     }
 }
