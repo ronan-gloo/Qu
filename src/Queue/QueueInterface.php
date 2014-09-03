@@ -9,4 +9,6 @@ interface QueueInterface extends \IteratorAggregate, \Countable
     public function requeue($message);
 
     public function dequeue();
+
+    public function remove($message);
 }

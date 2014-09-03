@@ -95,6 +95,11 @@ class Queue implements QueueInterface
         throw new InvalidArgumentException;
     }
 
+    public function remove($message)
+    {
+
+    }
+
     /**
      * @return \Qu\Iterator\QueueIteratorInterface|Traversable
      */
