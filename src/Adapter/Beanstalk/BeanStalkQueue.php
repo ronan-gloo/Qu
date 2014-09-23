@@ -62,7 +62,7 @@ class BeanStalkQueue implements QueueAdapterInterface, EncoderAwareInterface
      */
     public function enqueueAll(MessageCollectionInterface $messages)
     {
-        foreach ($messages as $message) {
+        foreach ($messages->getMessages() as $message) {
             $this->enqueue($message);
         }
     }
@@ -73,6 +73,8 @@ class BeanStalkQueue implements QueueAdapterInterface, EncoderAwareInterface
     public function dequeue()
     {
         $msg = null;
+
+        // todo: do not use reserver from tube, it call ignore()
         $job = $this->client->reserveFromTube(
             $this->config->getTube(),
             $this->config->getWaitTimeout()

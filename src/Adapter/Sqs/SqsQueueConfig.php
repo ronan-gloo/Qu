@@ -16,6 +16,7 @@ class SqsQueueConfig implements HydratorAwareInterface
     const DEFAULT_VISIBILITY_TIMEOUT = 30;     // seconds
     const DEFAULT_POLLING_TIME       = 20;     // seconds
     const BATCH_MAX_SIZE             = 10;
+    const MAX_DELAY_SECONDS          = 900;
 
     /**
      * Properties blacklist when exporting attributes
@@ -108,7 +109,8 @@ class SqsQueueConfig implements HydratorAwareInterface
      */
     public function setDelaySeconds($messageDelay)
     {
-        $this->delaySeconds = (int) $messageDelay;
+        $this->delaySeconds = min((int) $messageDelay, static::MAX_DELAY_SECONDS);
+
         return $this;
     }
 
@@ -126,7 +128,8 @@ class SqsQueueConfig implements HydratorAwareInterface
      */
     public function setMaximumMessageSize($maximumMessageSize)
     {
-        $this->maximumMessageSize = (int) $maximumMessageSize;
+        $this->maximumMessageSize = min((int) $maximumMessageSize, static::DEFAULT_MAX_MESSAGE_SIZE);
+
         return $this;
     }
 

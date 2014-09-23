@@ -237,6 +237,8 @@ class SqsQueue implements QueueAdapterInterface, EncoderAwareInterface
      */
     protected function getMessageDelay(MessageInterface $message)
     {
-        return $message->getDelay() === null ? $this->config->getDelaySeconds() : $message->getDelay();
+        $delay = $message->getDelay() === null ? $this->config->getDelaySeconds() : $message->getDelay();
+
+        return min($delay, SqsQueueConfig::MAX_DELAY_SECONDS);
     }
 }
