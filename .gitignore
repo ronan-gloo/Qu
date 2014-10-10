@@ -3,4 +3,3 @@ vendor
 demo
 .idea
 composer.lock
-src/Bridge
