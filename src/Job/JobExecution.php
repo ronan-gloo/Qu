@@ -6,33 +6,15 @@ use Qu\Exception\RuntimeException;
 
 class JobExecution implements JobExecutionInterface
 {
-    const STATUS_UNPROCESSED = 0;
-    const STATUS_SUCCEED     = 1;
-    const STATUS_FAILED      = 2;
-
-    /**
-     * @var \Qu\Job\JobInterface
-     */
-    protected $job;
-
     /**
      * @var int
      */
-    protected $status;
+    protected $status = self::STATUS_UNPROCESSED;
 
     /**
      * @var mixed
      */
     protected $result;
-
-    /**
-     * @param JobInterface $job
-     */
-    public function __construct(JobInterface $job)
-    {
-        $this->job    = $job;
-        $this->status = static::STATUS_UNPROCESSED;
-    }
 
     /**
      * @param mixed $result

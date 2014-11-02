@@ -17,9 +17,18 @@
          strict="false"
          verbose="true">
 
+    <logging>
+        <log type="coverage-html" target="build/reports/coverage/html" charset="UTF-8"/>
+        <log type="coverage-clover" target="build/reports/coverage/clover.xml" charset="UTF-8"/>
+    </logging>
+
     <filter>
         <whitelist>
             <directory suffix=".php">src</directory>
+            <exclude>
+                <directory suffix="Interface.php">src/</directory>
+                <directory suffix="Exception.php">src/</directory>
+            </exclude>
         </whitelist>
     </filter>
 

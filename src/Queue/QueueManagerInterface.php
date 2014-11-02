@@ -31,7 +31,7 @@ interface QueueManagerInterface
     /**
      * Update the queue
      *
-     * @param QueueInterface $queue
+     * @param QueueAdapterInterface $queue
      * @return void
      * @throws QueueNotFoundException   If the queue cannot be found
      * @throws RuntimeException         Otherwise
@@ -41,7 +41,7 @@ interface QueueManagerInterface
     /**
      * Permanently delete a queue.
      *
-     * @param QueueInterface $queue
+     * @param QueueAdapterInterface $queue
      * @return void
      * @throws QueueNotFoundException   If the queue cannot be found
      * @throws RuntimeException         Otherwise
@@ -52,7 +52,7 @@ interface QueueManagerInterface
      * Remove all available from the queue.
      * implementations will assume that busy|invisible elements mst not be removed
      *
-     * @param QueueInterface $queue
+     * @param QueueAdapterInterface $queue
      * @return void
      * @throws QueueNotFoundException   If the queue cannot be found
      * @throws RuntimeException         Otherwise

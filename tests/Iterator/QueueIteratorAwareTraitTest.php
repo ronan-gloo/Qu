@@ -2,6 +2,9 @@
 
 namespace Qu\Iterator;
 
+use Qu\Queue\QueueInterface;
+use Traversable;
+
 class QueueIteratorAwareTraitTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -11,12 +14,7 @@ class QueueIteratorAwareTraitTest extends \PHPUnit_Framework_TestCase
     
     public function setUp()
     {
-        $this->instance = $this->getObjectForTrait(__NAMESPACE__ . '\QueueIteratorAwareTrait');
-    }
-
-    public function testDefaultIterator()
-    {
-        $this->assertNull($this->instance->getIterator());
+        $this->instance = new QueueIteratorTraitStub;
     }
 
     public function testIteratorAccessor()
@@ -29,5 +27,19 @@ class QueueIteratorAwareTraitTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->instance, $this->instance->setIterator($iterator));
         $this->assertSame($iterator, $this->instance->getIterator());
     }
+
+    public function testDefaultIteratorIsCreatedIfNotSet()
+    {
+        $iterator = $this->instance->getIterator();
+        $this->assertInstanceOf('Qu\Iterator\QueueIterator', $iterator);
+    }
 }
- 
+class QueueIteratorTraitStub implements QueueInterface
+{
+    use QueueIteratorAwareTrait;
+    public function enqueue($message) {}
+    public function requeue($message) {}
+    public function dequeue() {}
+    public function remove($message) {}
+    public function count(){}
+}

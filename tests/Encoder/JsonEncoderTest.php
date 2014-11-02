@@ -68,9 +68,15 @@ class JsonEncoderTest extends \PHPUnit_Framework_TestCase
 
         $message->setMetadata($data = ['test' => 'meta']);
         $message->setData($data = ['test' => 'data']);
+        $message->setDelay(1);
+        $message->setPriority(2);
+        $message->setId(3);
 
         $encoded = $this->instance->encode($message);
         $decoded = $this->instance->decode($encoded);
         $this->assertEquals($decoded, $message);
+
+        $data = [];
+        $this->assertNull($this->instance->decode(json_encode($data)));
     }
 }

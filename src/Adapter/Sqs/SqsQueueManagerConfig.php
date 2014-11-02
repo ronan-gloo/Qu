@@ -3,19 +3,9 @@
 namespace Qu\Adapter\Sqs;
 
 use Qu\Config\HydratorAwareInterface;
-use Qu\Config\HydratorAwareTrait;
 
-class SqsQueueManagerConfig implements HydratorAwareInterface
+class SqsQueueManagerConfig extends AbstractSqsConfig implements HydratorAwareInterface
 {
-    use HydratorAwareTrait;
-
-    /**
-     * Required account id
-     *
-     * @var integer
-     */
-    protected $accountId;
-
     /**
      * Create a new queue silently if the requested if not found in definitions
      * @var bool
@@ -28,35 +18,6 @@ class SqsQueueManagerConfig implements HydratorAwareInterface
      * @var string
      */
     protected $queueNamePrefix;
-
-    /**
-     * @param array $config
-     * @internal param array $definitions
-     */
-    public function __construct($config = [])
-    {
-        if ($config) {
-            $this->hydrate($config);
-        }
-    }
-
-    /**
-     * @param int $accountId
-     * @return self
-     */
-    public function setAccountId($accountId)
-    {
-        $this->accountId = (int) $accountId;
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getAccountId()
-    {
-        return $this->accountId;
-    }
 
     /**
      * @param boolean $createIfNotFound
@@ -77,12 +38,14 @@ class SqsQueueManagerConfig implements HydratorAwareInterface
     }
 
     /**
-     * @param string $queuesPrefix
+     * @param string $queuePrefix
      * @return self
      */
-    public function setQueueNamePrefix($queuesPrefix)
+    public function setQueueNamePrefix($queuePrefix)
     {
-        $this->queueNamePrefix = (string) $queuesPrefix;
+        $queuePrefix = trim($queuePrefix);
+        $this->validateQueueName($queuePrefix);
+        $this->queueNamePrefix = $queuePrefix;
         return $this;
     }
 

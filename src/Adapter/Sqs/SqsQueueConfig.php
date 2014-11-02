@@ -3,34 +3,44 @@
 namespace Qu\Adapter\Sqs;
 
 use Qu\Config\HydratorAwareInterface;
-use Qu\Config\HydratorAwareTrait;
-use Qu\Exception\InvalidArgumentException;
 
-class SqsQueueConfig implements HydratorAwareInterface
+class SqsQueueConfig extends AbstractSqsConfig implements HydratorAwareInterface
 {
-    use HydratorAwareTrait;
+    const DEFAULT_VISIBILITY_TIMEOUT = 30;      // seconds
 
-    const DEFAULT_DELAY_DELIVERY     = 0;      // seconds
-    const DEFAULT_RETENTION_PERIOD   = 345600; // seconds, 4 days
-    const DEFAULT_MAX_MESSAGE_SIZE   = 262144; // bytes
-    const DEFAULT_VISIBILITY_TIMEOUT = 30;     // seconds
-    const DEFAULT_POLLING_TIME       = 20;     // seconds
-    const BATCH_MAX_SIZE             = 10;
-    const MAX_DELAY_SECONDS          = 900;
+    const MAX_BATCH_SIZE             = 10;      // items
+
+    const MIN_DELAY_SECONDS          = 0;       // seconds
+    const MAX_DELAY_SECONDS          = 900;     // seconds
+
+    const MAX_MESSAGE_SIZE           = 262144;  // bytes
+    const MIN_MESSAGE_SIZE           = 125;     // bytes
+
+    const MAX_VISIBILITY_SECONDS     = 43200;   // seconds
+    const MAX_POLLING_SECONDS        = 20;      // seconds
+
+    const MAX_RETENTION_PERIOD       = 345600;  // seconds, 4 days
+    const MIN_RETENTION_PERIOD       = 60;      // seconds
 
     /**
      * Properties blacklist when exporting attributes
      *
      * @var array
      */
-    private static $skippedAttributes = ['accountId', 'name', 'arrayHydrator', 'batchSize'];
+    private static $attributes = [
+        'DelaySeconds',
+        'VisibilityTimeout',
+        'MaximumMessageSize',
+        'ReceiveMessageWaitTimeSeconds',
+        'MessageRetentionPeriod'
+    ];
 
     /**
      * Defer, in seconds, the availability of the message in tth queue
      *
      * @var int
      */
-    protected $delaySeconds = self::DEFAULT_DELAY_DELIVERY;
+    protected $delaySeconds = self::MIN_DELAY_SECONDS;
 
     /**
      * How long, in seconds, messages visibility will be locked
@@ -44,72 +54,63 @@ class SqsQueueConfig implements HydratorAwareInterface
      *
      * @var null
      */
-    protected $maximumMessageSize = self::DEFAULT_MAX_MESSAGE_SIZE;
+    protected $maximumMessageSize = self::MAX_MESSAGE_SIZE;
 
     /**
      * Time, in seconds, to wait for incoming messages
      *
      * @var int
      */
-    protected $receiveMessageWaitTimeSeconds = self::DEFAULT_POLLING_TIME;
+    protected $receiveMessageWaitTimeSeconds = self::MAX_POLLING_SECONDS;
 
     /**
      * How long messages must reside in queue in seconds
      *
      * @var int
      */
-    protected $messageRetentionPeriod = self::DEFAULT_RETENTION_PERIOD;
+    protected $messageRetentionPeriod = self::MAX_RETENTION_PERIOD;
 
     /**
      * The number of message to treat per batch
      *
      * @var int
      */
-    protected $batchSize = self::BATCH_MAX_SIZE;
+    protected $batchSize = self::MAX_BATCH_SIZE;
 
     /**
-     * @var int
-     */
-    protected $accountId;
-
-    /**
+     * Limited to alphanumeric (and - or _) 80 characters max
+     *
      * @var string
      */
     protected $name = '';
 
     /**
-     * @param array $options
-     */
-    public function __construct($options = [])
-    {
-        if ($options) {
-            $this->hydrate($options);
-        }
-    }
-
-    /**
-     * convert config properties to Sqs attributes syntax
+     * convert config properties to Sqs attributes syntax.
+     *
+     * @return array
      */
     public function toAttributes()
     {
         $attributes = [];
-
-        foreach ($this as $name => $property) {
-            if (! in_array($name, self::$skippedAttributes)) {
-                $attributes[ucfirst($name)] = $property;
-            }
+        foreach (static::$attributes as $name) {
+            $attributes[$name] = $this->{lcfirst($name)};
         }
 
         return $attributes;
     }
 
     /**
-     * @param mixed $messageDelay
+     * Value is constrain between 0 & MAX_DELAY_SECONDS
+     *
+     * @param int|float|string $messageDelay
      * @return self
      */
     public function setDelaySeconds($messageDelay)
     {
-        $this->delaySeconds = min((int) $messageDelay, static::MAX_DELAY_SECONDS);
+        $this->delaySeconds = min(
+            max(0, (int) round($messageDelay)),
+            static::MAX_DELAY_SECONDS
+        );
 
         return $this;
     }
@@ -128,7 +129,10 @@ class SqsQueueConfig implements HydratorAwareInterface
      */
     public function setMaximumMessageSize($maximumMessageSize)
     {
-        $this->maximumMessageSize = min((int) $maximumMessageSize, static::DEFAULT_MAX_MESSAGE_SIZE);
+        $this->maximumMessageSize = min(
+            max(static::MIN_MESSAGE_SIZE, (int) round($maximumMessageSize)),
+            static::MAX_MESSAGE_SIZE
+        );
 
         return $this;
     }
@@ -147,7 +151,10 @@ class SqsQueueConfig implements HydratorAwareInterface
      */
     public function setVisibilityTimeout($visibilityTimeout)
     {
-        $this->visibilityTimeout = (int) $visibilityTimeout;
+        $this->visibilityTimeout = min(
+            max(0, (int) round($visibilityTimeout)),
+            static::MAX_VISIBILITY_SECONDS
+        );
         return $this;
     }
 
@@ -160,12 +167,15 @@ class SqsQueueConfig implements HydratorAwareInterface
     }
 
     /**
-     * @param int $WaitTimeSeconds
+     * @param int $waitTimeSeconds
      * @return self
      */
-    public function setReceiveMessageWaitTimeSeconds($WaitTimeSeconds)
+    public function setReceiveMessageWaitTimeSeconds($waitTimeSeconds)
     {
-        $this->receiveMessageWaitTimeSeconds = (int) $WaitTimeSeconds;
+        $this->receiveMessageWaitTimeSeconds = min(
+            max(0, (int) round($waitTimeSeconds)),
+            static::MAX_POLLING_SECONDS
+        );
         return $this;
     }
 
@@ -183,7 +193,10 @@ class SqsQueueConfig implements HydratorAwareInterface
      */
     public function setMessageRetentionPeriod($messageRetentionPeriod)
     {
-        $this->messageRetentionPeriod = (int) $messageRetentionPeriod;
+        $this->messageRetentionPeriod = min(
+            max(static::MIN_RETENTION_PERIOD, (int) round($messageRetentionPeriod)),
+            static::MAX_RETENTION_PERIOD
+        );
         return $this;
     }
 
@@ -196,30 +209,15 @@ class SqsQueueConfig implements HydratorAwareInterface
     }
 
     /**
-     * @param string $accountId
-     * @return self
-     */
-    public function setAccountId($accountId)
-    {
-        $this->accountId = (int) $accountId;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAccountId()
-    {
-        return $this->accountId;
-    }
-
-    /**
      * @param string $name
+     * @throws \Qu\Exception\InvalidArgumentException
      * @return self
      */
     public function setName($name)
     {
-        $this->name = (string) $name;
+        $name = trim($name);
+        $this->validateQueueName($name);
+        $this->name = $name;
         return $this;
     }
 
@@ -233,18 +231,11 @@ class SqsQueueConfig implements HydratorAwareInterface
 
     /**
      * @param int $batchSize
-     * @throws \Qu\Exception\InvalidArgumentException
      * @return self
      */
     public function setBatchSize($batchSize)
     {
-        $intValue = (int) $batchSize;
-
-        if ($intValue > static::BATCH_MAX_SIZE) {
-            throw new InvalidArgumentException(sprintf('Batch size cannot exceed %d items', static::BATCH_MAX_SIZE));
-        }
-
-        $this->batchSize = $batchSize;
+        $this->batchSize = min(max(1, (int) round($batchSize)), static::MAX_BATCH_SIZE);
 
         return $this;
     }
