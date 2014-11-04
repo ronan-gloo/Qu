@@ -234,7 +234,7 @@ class SqsQueueConfigTest extends \PHPUnit_Framework_TestCase
     public function testConstructorWithArrayConfig()
     {
         $config   = ['delay_seconds' => 22];
-        $instance = new SqsPriorityQueueConfig($config);
+        $instance = new SqsQueueConfig($config);
         $this->assertSame(22, $instance->getDelaySeconds());
     }
 }

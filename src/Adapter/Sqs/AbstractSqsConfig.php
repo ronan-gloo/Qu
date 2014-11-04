@@ -22,7 +22,7 @@ abstract class AbstractSqsConfig implements HydratorAwareInterface
 
     /**
      * @param int $accountId
-     * @return self
+     * @return $this
      */
     public function setAccountId($accountId)
     {

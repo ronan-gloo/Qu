@@ -82,14 +82,12 @@ class SqsQueueManager implements QueueManagerInterface
 
         $config     = $this->config;
         $name       = $options->getName();
-        $Attributes = $options->toAttributes();
-        $hasPrefix  = strpos($config->getQueueNamePrefix(), $name) === 0;
-        $QueueName  = $hasPrefix ? $name : $config->getQueueNamePrefix() . $name;
-
-        $options->setName($QueueName);
+        $prefix     = $config->getQueueNamePrefix();
+        $QueueName  = strpos($prefix, $name) === 0 ? $name : $prefix . $name;
 
         // SQS is resilient when creating a new queue, only if attributes are similar
         try {
+            $Attributes = $options->toAttributes();
             $this->client->createQueue(compact('QueueName', 'Attributes'));
         }
         catch (\Exception $e) {
@@ -104,8 +102,8 @@ class SqsQueueManager implements QueueManagerInterface
      */
     public function remove(QueueAdapterInterface $queue)
     {
-        if (! $queue instanceof SqsQueue || ! $this->exists($queue)) {
-            throw new QueueNotFoundException('The specified queue does not exists');
+        if (! $queue instanceof SqsQueue) {
+            throw new InvalidArgumentException('expecting an instance of SqsQueue');
         }
 
         try {
@@ -127,10 +125,12 @@ class SqsQueueManager implements QueueManagerInterface
 
         // we don't invoke count on each iteration, tis can cause flushing message
         // that are enqueued by other services during this operation
-        $count = count($queue);
+        $count = $queue->count();
         while($count--) {
-            $message = $queue->dequeue()
-            and $queue->remove($message);
+            $message = $queue->dequeue();
+            if ($message) {
+                $queue->remove($message);
+            }
         }
     }
 
