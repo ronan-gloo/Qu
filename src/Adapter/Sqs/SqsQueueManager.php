@@ -25,10 +25,10 @@ class SqsQueueManager implements QueueManagerInterface
      * @param SqsClient $client
      * @param array|SqsQueue[]|SqsQueueManagerConfig $config
      */
-    public function __construct(SqsClient $client, $config = [])
+    public function __construct(SqsClient $client, SqsQueueManagerConfig $config)
     {
         $this->client = $client;
-        $this->config = $config instanceof SqsQueueManagerConfig ? $config : new SqsQueueManagerConfig($config);
+        $this->config = $config;
     }
 
     /**
@@ -76,22 +76,12 @@ class SqsQueueManager implements QueueManagerInterface
      */
     public function create($options)
     {
-        $config = $this->config;
-        $name   = null;
-
-        if (is_array($options)) {
-            $options = new SqsQueueConfig($options);
-            $name = $options->getName();
-        }
-        elseif (is_string($options)) {
-            $name = $options;
-            $options = new SqsQueueConfig(['account_id' => $config->getAccountId()]);
-        }
-
-        if (! $name || ! $options instanceof SqsQueueConfig) {
+        if (! $options instanceof SqsQueueConfig) {
             throw new InvalidArgumentException('$options cannot be used to create a new queue');
         }
 
+        $config     = $this->config;
+        $name       = $options->getName();
         $Attributes = $options->toAttributes();
         $hasPrefix  = strpos($config->getQueueNamePrefix(), $name) === 0;
         $QueueName  = $hasPrefix ? $name : $config->getQueueNamePrefix() . $name;

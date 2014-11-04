@@ -35,12 +35,12 @@ class SqsQueue implements QueueAdapterInterface, EncoderAwareInterface
 
     /**
      * @param SqsClient $client
-     * @param array|\Qu\Adapter\Sqs\SqsQueueConfig $options
+     * @param array|\Qu\Adapter\Sqs\SqsQueueConfig $config
      */
-    public function __construct(SqsClient $client, $options)
+    public function __construct(SqsClient $client, SqsQueueConfig $config)
     {
         $this->client = $client;
-        $this->config = $options instanceof SqsQueueConfig ? $options : new SqsQueueConfig($options);
+        $this->config = $config;
         $this->url    = $client->getBaseUrl() . '/' . $this->config->getAccountId() . '/' . $this->config->getName();
     }
 
@@ -239,6 +239,6 @@ class SqsQueue implements QueueAdapterInterface, EncoderAwareInterface
     {
         $delay = $message->getDelay() === null ? $this->config->getDelaySeconds() : $message->getDelay();
 
-        return min($delay, SqsQueueConfig::MAX_DELAY_SECONDS);
+        return min($delay, SqsPriorityQueueConfig::MAX_DELAY_SECONDS);
     }
 }

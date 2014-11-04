@@ -2,9 +2,7 @@
 
 namespace Qu\Adapter\Sqs;
 
-use Qu\Config\HydratorAwareInterface;
-
-class SqsQueueConfig extends AbstractSqsConfig implements HydratorAwareInterface
+class SqsQueueConfig extends AbstractSqsConfig
 {
     const DEFAULT_VISIBILITY_TIMEOUT = 30;      // seconds
 
@@ -27,7 +25,7 @@ class SqsQueueConfig extends AbstractSqsConfig implements HydratorAwareInterface
      *
      * @var array
      */
-    private static $attributes = [
+    protected static $attributes = [
         'DelaySeconds',
         'VisibilityTimeout',
         'MaximumMessageSize',

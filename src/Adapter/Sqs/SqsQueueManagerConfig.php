@@ -2,9 +2,7 @@
 
 namespace Qu\Adapter\Sqs;
 
-use Qu\Config\HydratorAwareInterface;
-
-class SqsQueueManagerConfig extends AbstractSqsConfig implements HydratorAwareInterface
+class SqsQueueManagerConfig extends AbstractSqsConfig
 {
     /**
      * Create a new queue silently if the requested if not found in definitions

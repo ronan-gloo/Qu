@@ -3,9 +3,10 @@
 namespace Qu\Adapter\Sqs;
 
 use Qu\Config\HydratorAwareTrait;
+use Qu\Config\HydratorAwareInterface;
 use Qu\Exception\InvalidArgumentException;
 
-abstract class AbstractSqsConfig
+abstract class AbstractSqsConfig implements HydratorAwareInterface
 {
     use HydratorAwareTrait;
 
@@ -14,6 +15,7 @@ abstract class AbstractSqsConfig
 
     /**
      * Required AWS account id
+     *
      * @var string|int
      */
     protected $accountId;
@@ -70,4 +72,4 @@ abstract class AbstractSqsConfig
             );
         }
     }
-} 
+}
