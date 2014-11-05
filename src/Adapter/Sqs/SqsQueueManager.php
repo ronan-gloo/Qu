@@ -36,10 +36,10 @@ class SqsQueueManager implements QueueManagerInterface
      */
     public function get($name)
     {
-        $queue = new SqsQueue($this->client, [
+        $queue = new SqsQueue($this->client, new SqsQueueConfig([
             'account_id' => $this->config->getAccountId(),
             'name'       => $this->config->getQueueNamePrefix() . strval($name)
-        ]);
+        ]));
 
         if (! $this->exists($queue)) {
             if (! $this->config->getCreateNotFound()) {
