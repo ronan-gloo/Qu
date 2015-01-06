@@ -9,7 +9,6 @@
 
     "require-dev": {
         "aws/aws-sdk-php": "2.*",
-        "pda/pheanstalk": "3.*",
         "phpunit/phpunit": "4.*"
     },
 

@@ -120,7 +120,6 @@ class SqsQueue implements QueueAdapterInterface, EncoderAwareInterface
         }
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -164,6 +163,8 @@ class SqsQueue implements QueueAdapterInterface, EncoderAwareInterface
         catch (\Exception $e) {
             throw new OperationException($e->getMessage(), 0, $e);
         }
+
+        $message->setMetadata(static::RECEIPT_HANDLE_KEY, null);
     }
 
     /**
@@ -198,6 +199,7 @@ class SqsQueue implements QueueAdapterInterface, EncoderAwareInterface
             throw new OperationException('Message as not been in queue previously');
         }
 
+        $this->remove($message);
         $this->enqueue($message);
     }
 
@@ -213,6 +215,7 @@ class SqsQueue implements QueueAdapterInterface, EncoderAwareInterface
             }
         }
 
+        $this->removeAll($messages);
         $this->enqueueAll($messages);
     }
 
