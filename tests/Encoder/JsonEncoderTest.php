@@ -77,6 +77,6 @@ class JsonEncoderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($decoded, $message);
 
         $data = [];
-        $this->assertNull($this->instance->decode(json_encode($data)));
+        $this->assertInstanceOf('Qu\Message\Message', $this->instance->decode(json_encode($data)));
     }
 }

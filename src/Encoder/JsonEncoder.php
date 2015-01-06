@@ -83,13 +83,14 @@ class JsonEncoder implements EncoderInterface
         array_unshift($arguments, $data);
 
         $data = (array) call_user_func_array('json_decode', $arguments);
+
+        // Fallback to default message implementation
         if (! isset($data['name']) || ! class_exists($data['name'])) {
-            return null;
+            $data['name'] = 'Qu\Message\Message';
         }
 
         /** @var MessageInterface $message */
         $message = new $data['name'];
-
         if (isset($data['id'])) {
             $message->setId($data['id']);
         }

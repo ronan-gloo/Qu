@@ -146,4 +146,3 @@ class SqsQueueManagerTest extends \PHPUnit_Framework_TestCase
         $this->instance->remove($queue);
     }
 }
- 

@@ -7,6 +7,9 @@ namespace Qu\Message;
  */
 trait MessagePrototypeTrait
 {
+    /**
+     * @var mixed
+     */
     protected $id;
 
     /**

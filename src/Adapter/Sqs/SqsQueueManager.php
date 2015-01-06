@@ -4,6 +4,7 @@ namespace Qu\Adapter\Sqs;
 
 use Aws\Sqs\SqsClient;
 use Qu\Exception\InvalidArgumentException;
+use Qu\Exception\OperationException;
 use Qu\Exception\QueueNotFoundException;
 use Qu\Exception\RuntimeException;
 use Qu\Queue\QueueAdapterInterface;
@@ -36,23 +37,24 @@ class SqsQueueManager implements QueueManagerInterface
      */
     public function get($name)
     {
-        $queue = new SqsQueue($this->client, new SqsQueueConfig([
-            'account_id' => $this->config->getAccountId(),
-            'name'       => $this->config->getQueueNamePrefix() . strval($name)
-        ]));
+        $config = new SqsQueueConfig();
+        $config->setName($this->prepareQueueName($name));
 
-        if (! $this->exists($queue)) {
+        if ($this->has($name)) {
+            $attributes = $this->readQueueAttributes($config->getName());
+            $config->hydrate($attributes);
+            return new SqsQueue($this->client, $config);
+        }
+        else {
             if (! $this->config->getCreateNotFound()) {
                 throw new QueueNotFoundException('cannot find the queue with name ' . $name);
             }
-            $this->client->createQueue([
-                'QueueName'  => $queue->getConfig()->getName(),
-                'Attributes' => $queue->getConfig()->toAttributes()
-            ]);
-        }
+            $config->setName($name);
 
-        return $queue;
+            return $this->create($config);
+        }
     }
+
 
     /**
      * Check if the name exists in the set of urls
@@ -62,7 +64,7 @@ class SqsQueueManager implements QueueManagerInterface
      */
     public function has($name)
     {
-        $name = $this->config->getQueueNamePrefix() . $name;
+        $name = $this->prepareQueueName($name);
         foreach ($this->getUrls() as $url) {
             if ($name === basename($url)) {
                 return true;
@@ -79,21 +81,17 @@ class SqsQueueManager implements QueueManagerInterface
         if (! $options instanceof SqsQueueConfig) {
             throw new InvalidArgumentException('$options cannot be used to create a new queue');
         }
-
-        $config     = $this->config;
-        $name       = $options->getName();
-        $prefix     = $config->getQueueNamePrefix();
-        $QueueName  = strpos($prefix, $name) === 0 ? $name : $prefix . $name;
-
         // SQS is resilient when creating a new queue, only if attributes are similar
         try {
-            $Attributes = $options->toAttributes();
-            $this->client->createQueue(compact('QueueName', 'Attributes'));
+            $this->client->createQueue([
+                'QueueName'  => $this->prepareQueueName($options->getName()),
+                'Attributes' => $options->toAttributes()
+            ]);
         }
         catch (\Exception $e) {
-            throw new RuntimeException('Cannot create the queue with name ' . $QueueName, $e->getCode(), $e);
+            throw new RuntimeException('Cannot create the queue with name ' . $options->getName(), $e->getCode(), $e);
         }
-
+        $options->setAccountId($this->config->getAccountId());
         return new SqsQueue($this->client, $options);
     }
 
@@ -160,11 +158,36 @@ class SqsQueueManager implements QueueManagerInterface
     }
 
     /**
-     * @param SqsQueue $queue
-     * @return bool
+     * @param $name
+     * @return string
      */
-    protected function exists(SqsQueue $queue)
+    protected function prepareQueueName($name)
     {
-        return in_array($queue->getUrl(), $this->getUrls());
+        return $this->config->getQueueNamePrefix() . strval($name);
+    }
+
+    /**
+     * @param string $name
+     * @throws OperationException
+     * @return array
+     */
+    protected function readQueueAttributes($name)
+    {
+        try {
+            // grab url before in order to read attributes
+            $queueUrl = $this->client->getQueueUrl([
+                'QueueName' => $name
+            ]);
+            $attributes = $this->client->getQueueAttributes([
+                'QueueUrl' => $queueUrl->get('QueueUrl'),
+                'AttributeNames' => ['All']
+            ]);
+            return $attributes->get('Attributes');
+        }
+        catch (\Exception $e) {
+            throw new OperationException(sprintf(
+                'Cannot read attributes for queue "%s":%s', $name, $e->getMessage()
+            ), $e->getCode(), $e);
+        }
     }
 }

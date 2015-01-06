@@ -20,7 +20,6 @@
     },
 
     "suggest": {
-        "aws/aws-sdk-php": "Aws sdk for Sqs adapter",
-        "pda/pheanstalk": "Pheanstalk sdk for Beandstalk adapter"
+        "aws/aws-sdk-php": "Aws sdk for Sqs adapter"
     }
 }

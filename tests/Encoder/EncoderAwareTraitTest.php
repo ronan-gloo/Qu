@@ -16,6 +16,12 @@ class EncoderAwareTraitTest extends \PHPUnit_Framework_TestCase
 
     public function testSerializerAccessor()
     {
+        $this->assertInstanceOf(
+            __NAMESPACE__ . '\JsonEncoder',
+            $this->instance->getEncoder(),
+            'Default Encoder driven by json'
+        );
+
         $serializer = $this->getMock(__NAMESPACE__ . '\EncoderInterface');
         $this->assertSame($this->instance, $this->instance->setEncoder($serializer));
         $this->assertSame($serializer, $this->instance->getEncoder());
