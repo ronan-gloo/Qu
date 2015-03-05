@@ -2,11 +2,9 @@
     "name": "ronan-gloo/qu",
     "description": "Queue Job / Messaging management",
     "minimum-stability": "dev",
-
     "require" : {
         "php": ">=5.4"
     },
-
     "require-dev": {
         "aws/aws-sdk-php": "2.*",
         "phpunit/phpunit": "4.*"
@@ -17,7 +15,6 @@
             "Qu\\": "src/"
         }
     },
-
     "suggest": {
         "aws/aws-sdk-php": "Aws sdk for Sqs adapter"
     }
